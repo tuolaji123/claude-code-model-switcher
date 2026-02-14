@@ -1,0 +1,144 @@
+{
+  "name": "claude-code-model-switcher",
+  "displayName": "Claude Code 模型切换器",
+  "description": "为 Claude Code CLI 快速切换不同模型服务商",
+  "version": "1.0.0",
+  "publisher": "kimi-code",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "claude",
+    "code",
+    "model",
+    "switcher",
+    "glm",
+    "anthropic"
+  ],
+  "activationEvents": [
+    "onView:claudeCodeModelSwitcher"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "claudeCodeModelSwitcher",
+          "name": "Claude Code 模型",
+          "when": "true",
+          "icon": "resources/model.svg"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "claudeCodeModelSwitcherContainer",
+          "title": "Claude Code 模型切换",
+          "icon": "resources/model.svg"
+        }
+      ]
+    },
+    "views": {
+      "claudeCodeModelSwitcherContainer": [
+        {
+          "id": "claudeCodeModelSwitcher",
+          "name": "模型列表",
+          "icon": "resources/model.svg",
+          "contextualTitle": "模型切换器"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "claudeCodeModelSwitcher.switchModel",
+        "title": "切换到此模型",
+        "icon": "$(check)"
+      },
+      {
+        "command": "claudeCodeModelSwitcher.addProvider",
+        "title": "添加供应商",
+        "icon": "$(add)"
+      },
+      {
+        "command": "claudeCodeModelSwitcher.editProvider",
+        "title": "编辑配置文件",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "claudeCodeModelSwitcher.deleteProvider",
+        "title": "删除",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "claudeCodeModelSwitcher.renameProvider",
+        "title": "重命名",
+        "icon": "$(symbol-key)"
+      },
+      {
+        "command": "claudeCodeModelSwitcher.refresh",
+        "title": "刷新",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "claudeCodeModelSwitcher.addProvider",
+          "when": "view == claudeCodeModelSwitcher",
+          "group": "navigation"
+        },
+        {
+          "command": "claudeCodeModelSwitcher.refresh",
+          "when": "view == claudeCodeModelSwitcher",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "claudeCodeModelSwitcher.editProvider",
+          "when": "view == claudeCodeModelSwitcher",
+          "group": "inline@1"
+        },
+        {
+          "command": "claudeCodeModelSwitcher.deleteProvider",
+          "when": "view == claudeCodeModelSwitcher",
+          "group": "inline@2"
+        },
+        {
+          "command": "claudeCodeModelSwitcher.switchModel",
+          "when": "view == claudeCodeModelSwitcher",
+          "group": "inline@0"
+        },
+        {
+          "command": "claudeCodeModelSwitcher.renameProvider",
+          "when": "view == claudeCodeModelSwitcher",
+          "group": "inline@3"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Claude Code 模型切换器",
+      "properties": {
+        "claudeCodeModelSwitcher.settingsPath": {
+          "type": "string",
+          "default": ".claude/settings.json",
+          "description": "设置文件的相对路径"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^18.x",
+    "@types/vscode": "^1.74.0",
+    "typescript": "^4.9.4"
+  }
+}
