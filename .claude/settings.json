@@ -1,6 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
-    "ANTHROPIC_AUTH_TOKEN": "6b941cb652284e7ebf862e422fb39f0b.cFXDC3t5t63LUhak"
+    "ANTHROPIC_BASE_URL": "https://claude.kun8.vip/api",
+    "ANTHROPIC_AUTH_TOKEN": "bma_e870b57c137cbb42a539d026ce9c0e75dcbf29ef407f5b055530639f5ef1b3ec"
   }
 }

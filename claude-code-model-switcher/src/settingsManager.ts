@@ -9,6 +9,52 @@ export interface Provider {
     authToken: string;
 }
 
+// 内置默认供应商列表（编译时写入）
+const DEFAULT_PROVIDERS: Provider[] = [
+    {
+        id: 'glm',
+        name: '智谱 GLM',
+        baseUrl: 'https://open.bigmodel.cn/api/anthropic',
+        authToken: '6b941cb652284e7ebf862e422fb39f0b.cFXDC3t5t63LUhak'
+    },
+    {
+        id: 'xiaobei',
+        name: '小北 Claude',
+        baseUrl: 'https://claude.kun8.vip/api',
+        authToken: 'bma_e870b57c137cbb42a539d026ce9c0e75dcbf29ef407f5b055530639f5ef1b3ec'
+    },
+    {
+        id: 'kimi',
+        name: 'Kimi 2.5 (需配置)',
+        baseUrl: 'https://api.moonshot.cn/anthropic',
+        authToken: ''
+    },
+    {
+        id: 'minimax',
+        name: 'MiniMax M2.5 (需配置)',
+        baseUrl: 'https://api.minimaxi.com/anthropic',
+        authToken: ''
+    },
+    {
+        id: 'claude',
+        name: 'Claude 官方 (需配置)',
+        baseUrl: 'https://api.anthropic.com',
+        authToken: ''
+    },
+    {
+        id: 'gac',
+        name: 'GAC 中转站 (需配置)',
+        baseUrl: 'https://gaccode.com/claudecode',
+        authToken: ''
+    },
+    {
+        id: 'deepseek',
+        name: 'DeepSeek (需配置)',
+        baseUrl: 'https://api.deepseek.com/anthropic',
+        authToken: ''
+    }
+];
+
 export class SettingsManager {
     private getSettingsPath(): string {
         if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
@@ -34,25 +80,18 @@ export class SettingsManager {
     // 读取供应商列表
     async getProviders(): Promise<Provider[]> {
         const providersPath = this.getProvidersPath();
-        
+
         if (!fs.existsSync(providersPath)) {
-            // 返回默认配置
-            return [
-                {
-                    id: 'glm',
-                    name: '智谱 GLM',
-                    baseUrl: 'https://open.bigmodel.cn/api/anthropic',
-                    authToken: ''
-                }
-            ];
+            // 文件不存在，返回内置默认配置
+            return DEFAULT_PROVIDERS;
         }
 
         try {
             const content = fs.readFileSync(providersPath, 'utf-8');
             const data = JSON.parse(content);
-            return data.providers || [];
+            return data.providers || DEFAULT_PROVIDERS;
         } catch {
-            return [];
+            return DEFAULT_PROVIDERS;
         }
     }
 
@@ -76,14 +115,14 @@ export class SettingsManager {
     async ensureProvidersFileExists(): Promise<void> {
         const providersPath = this.getProvidersPath();
         if (!fs.existsSync(providersPath)) {
-            await this.saveProviders([
-                {
-                    id: 'glm',
-                    name: '智谱 GLM',
-                    baseUrl: 'https://open.bigmodel.cn/api/anthropic',
-                    authToken: 'your-api-key-here'
-                }
-            ]);
+            // 使用默认供应商列表，但清除敏感信息
+            const initialProviders = DEFAULT_PROVIDERS.map(p => ({
+                ...p,
+                authToken: p.authToken && p.authToken !== '' && p.authToken !== 'your-api-key' && p.authToken.length > 20 
+                    ? p.authToken  // 保留有效的 API Key
+                    : ''  // 清空无效或占位符 key
+            }));
+            await this.saveProviders(initialProviders);
         }
     }
 
