@@ -1,9 +1,14 @@
 {
   "name": "claude-code-model-switcher",
   "displayName": "Claude Code 模型切换器",
-  "description": "为 Claude Code CLI 快速切换不同模型服务商",
+  "description": "让每个 Claude Code 项目使用不同的大模型",
   "version": "1.0.0",
-  "publisher": "kimi-code",
+  "publisher": "野生拖拉机",
+  "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tuolaji123/claude-code-model-switcher.git"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -24,12 +29,12 @@
   "main": "./out/extension.js",
   "contributes": {
     "views": {
-      "explorer": [
+      "claudeCodeModelSwitcherContainer": [
         {
           "id": "claudeCodeModelSwitcher",
-          "name": "Claude Code 模型",
-          "when": "true",
-          "icon": "resources/model.svg"
+          "name": "模型列表",
+          "icon": "resources/model.svg",
+          "contextualTitle": "模型切换器"
         }
       ]
     },
@@ -39,16 +44,6 @@
           "id": "claudeCodeModelSwitcherContainer",
           "title": "Claude Code 模型切换",
           "icon": "resources/model.svg"
-        }
-      ]
-    },
-    "views": {
-      "claudeCodeModelSwitcherContainer": [
-        {
-          "id": "claudeCodeModelSwitcher",
-          "name": "模型列表",
-          "icon": "resources/model.svg",
-          "contextualTitle": "模型切换器"
         }
       ]
     },

@@ -12,39 +12,27 @@ export interface Provider {
 // 内置默认供应商列表（编译时写入）
 const DEFAULT_PROVIDERS: Provider[] = [
     {
-        id: 'glm',
-        name: '智谱 GLM',
-        baseUrl: 'https://open.bigmodel.cn/api/anthropic',
-        authToken: '6b941cb652284e7ebf862e422fb39f0b.cFXDC3t5t63LUhak'
-    },
-    {
-        id: 'xiaobei',
-        name: '小北 Claude',
-        baseUrl: 'https://claude.kun8.vip/api',
-        authToken: 'bma_e870b57c137cbb42a539d026ce9c0e75dcbf29ef407f5b055530639f5ef1b3ec'
-    },
-    {
-        id: 'kimi',
-        name: 'Kimi 2.5 (需配置)',
-        baseUrl: 'https://api.moonshot.cn/anthropic',
-        authToken: ''
-    },
-    {
-        id: 'minimax',
-        name: 'MiniMax M2.5 (需配置)',
-        baseUrl: 'https://api.minimaxi.com/anthropic',
-        authToken: ''
-    },
-    {
         id: 'claude',
         name: 'Claude 官方 (需配置)',
         baseUrl: 'https://api.anthropic.com',
         authToken: ''
     },
     {
-        id: 'gac',
-        name: 'GAC 中转站 (需配置)',
-        baseUrl: 'https://gaccode.com/claudecode',
+        id: 'glm',
+        name: '智谱 GLM (需配置)',
+        baseUrl: 'https://open.bigmodel.cn/api/anthropic',
+        authToken: ''
+    },
+    {
+        id: 'kimi',
+        name: 'Kimi (需配置)',
+        baseUrl: 'https://api.moonshot.cn/anthropic',
+        authToken: ''
+    },
+    {
+        id: 'minimax',
+        name: 'MiniMax (需配置)',
+        baseUrl: 'https://api.minimaxi.com/anthropic',
         authToken: ''
     },
     {
@@ -52,10 +40,26 @@ const DEFAULT_PROVIDERS: Provider[] = [
         name: 'DeepSeek (需配置)',
         baseUrl: 'https://api.deepseek.com/anthropic',
         authToken: ''
+    },
+    {
+        id: 'gac',
+        name: 'GAC 中转站 (需配置)',
+        baseUrl: 'https://gaccode.com/claudecode',
+        authToken: ''
     }
 ];
 
 export class SettingsManager {
+    // 获取 Claude Code 全局配置目录 (~/.claude/)
+    private getGlobalClaudeDir(): string {
+        const homeDir = process.env.HOME || process.env.USERPROFILE;
+        if (!homeDir) {
+            throw new Error('无法获取用户主目录');
+        }
+        return path.join(homeDir, '.claude');
+    }
+
+    // 获取当前工作区的 settings.json 路径
     private getSettingsPath(): string {
         if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
             return path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, '.claude', 'settings.json');
@@ -63,11 +67,9 @@ export class SettingsManager {
         throw new Error('没有打开的工作区');
     }
 
+    // 获取全局供应商配置文件路径 (~/.claude/model-providers.json)
     private getProvidersPath(): string {
-        if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-            return path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, '.claude', 'model-providers.json');
-        }
-        throw new Error('没有打开的工作区');
+        return path.join(this.getGlobalClaudeDir(), 'model-providers.json');
     }
 
     private ensureDirectoryExists(filePath: string): void {
@@ -118,7 +120,7 @@ export class SettingsManager {
             // 使用默认供应商列表，但清除敏感信息
             const initialProviders = DEFAULT_PROVIDERS.map(p => ({
                 ...p,
-                authToken: p.authToken && p.authToken !== '' && p.authToken !== 'your-api-key' && p.authToken.length > 20 
+                authToken: p.authToken && p.authToken !== '' && p.authToken !== 'your-api-key' && p.authToken.length > 20
                     ? p.authToken  // 保留有效的 API Key
                     : ''  // 清空无效或占位符 key
             }));
@@ -171,7 +173,7 @@ export class SettingsManager {
 
         const providers = await this.getProviders();
         // 找到匹配的 provider（baseUrl 和 authToken 都匹配）
-        return providers.find(p => 
+        return providers.find(p =>
             p.baseUrl === currentBaseUrl && p.authToken === currentAuthToken
         ) || providers.find(p => p.baseUrl === currentBaseUrl) || null;
     }
@@ -180,11 +182,11 @@ export class SettingsManager {
     async addProvider(): Promise<void> {
         await this.ensureProvidersFileExists();
         const providersPath = this.getProvidersPath();
-        
+
         // 读取当前内容
         const content = fs.readFileSync(providersPath, 'utf-8');
         const data = JSON.parse(content);
-        
+
         // 添加新供应商模板
         const newProvider: Provider = {
             id: `provider-${Date.now()}`,
@@ -192,14 +194,14 @@ export class SettingsManager {
             baseUrl: 'https://api.example.com/anthropic',
             authToken: 'your-api-key'
         };
-        
+
         data.providers.push(newProvider);
         fs.writeFileSync(providersPath, JSON.stringify(data, null, 2), 'utf-8');
-        
+
         // 打开文件让用户编辑
         const document = await vscode.workspace.openTextDocument(providersPath);
         await vscode.window.showTextDocument(document);
-        
+
         // 定位到新添加的供应商位置
         const editor = vscode.window.activeTextEditor;
         if (editor) {
