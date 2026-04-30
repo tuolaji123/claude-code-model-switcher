@@ -3,7 +3,7 @@
   "displayName": "Claude Code 模型切换器",
   "description": "让每个 Claude Code 项目使用不同的大模型",
   "version": "1.0.0",
-  "publisher": "野生拖拉机",
+  "publisher": "tuolaji",
   "icon": "resources/icon.png",
   "repository": {
     "type": "git",

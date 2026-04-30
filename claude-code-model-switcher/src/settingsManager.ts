@@ -46,6 +46,12 @@ const DEFAULT_PROVIDERS: Provider[] = [
         name: 'GAC 中转站 (需配置)',
         baseUrl: 'https://gaccode.com/claudecode',
         authToken: ''
+    },
+    {
+        id: 'siliconflow',
+        name: '硅基流动 (需配置)',
+        baseUrl: 'https://api.siliconflow.cn',
+        authToken: ''
     }
 ];
 
