@@ -7,6 +7,8 @@ export interface Provider {
     name: string;
     baseUrl: string;
     authToken: string;
+    model?: string;
+    smallFastModel?: string;
 }
 
 // 内置默认供应商列表（编译时写入）
@@ -15,43 +17,57 @@ const DEFAULT_PROVIDERS: Provider[] = [
         id: 'claude',
         name: 'Claude 官方 (需配置)',
         baseUrl: 'https://api.anthropic.com',
-        authToken: ''
+        authToken: '',
+        model: '',
+        smallFastModel: ''
     },
     {
         id: 'glm',
         name: '智谱 GLM (需配置)',
         baseUrl: 'https://open.bigmodel.cn/api/anthropic',
-        authToken: ''
+        authToken: '',
+        model: '',
+        smallFastModel: ''
     },
     {
         id: 'kimi',
         name: 'Kimi (需配置)',
         baseUrl: 'https://api.moonshot.cn/anthropic',
-        authToken: ''
+        authToken: '',
+        model: '',
+        smallFastModel: ''
     },
     {
         id: 'minimax',
         name: 'MiniMax (需配置)',
         baseUrl: 'https://api.minimaxi.com/anthropic',
-        authToken: ''
+        authToken: '',
+        model: '',
+        smallFastModel: ''
     },
     {
         id: 'deepseek',
         name: 'DeepSeek (需配置)',
         baseUrl: 'https://api.deepseek.com/anthropic',
-        authToken: ''
+        authToken: '',
+        model: '',
+        smallFastModel: ''
     },
     {
         id: 'gac',
         name: 'GAC 中转站 (需配置)',
         baseUrl: 'https://gaccode.com/claudecode',
-        authToken: ''
+        authToken: '',
+        model: '',
+        smallFastModel: ''
     },
     {
         id: 'siliconflow',
         name: '硅基流动 (需配置)',
         baseUrl: 'https://api.siliconflow.cn',
-        authToken: ''
+        authToken: '',
+        model: '',
+        smallFastModel: ''
     }
 ];
 
@@ -164,6 +180,29 @@ export class SettingsManager {
         }
         settings.env.ANTHROPIC_BASE_URL = provider.baseUrl;
         settings.env.ANTHROPIC_AUTH_TOKEN = provider.authToken;
+
+        // 非 Anthropic 官方 provider 时，置空 ANTHROPIC_API_KEY 防止回退到官方认证
+        if (provider.id === 'claude' && provider.baseUrl === 'https://api.anthropic.com') {
+            delete settings.env.ANTHROPIC_API_KEY;
+        } else {
+            settings.env.ANTHROPIC_API_KEY = '';
+        }
+
+        // 模型字段：有值则写入，无值则删除
+        const model = provider.model?.trim();
+        if (model) {
+            settings.env.ANTHROPIC_MODEL = model;
+        } else {
+            delete settings.env.ANTHROPIC_MODEL;
+        }
+
+        const smallFastModel = provider.smallFastModel?.trim();
+        if (smallFastModel) {
+            settings.env.ANTHROPIC_SMALL_FAST_MODEL = smallFastModel;
+        } else {
+            delete settings.env.ANTHROPIC_SMALL_FAST_MODEL;
+        }
+
         this.saveSettingsJson(settings);
     }
 
@@ -198,7 +237,9 @@ export class SettingsManager {
             id: `provider-${Date.now()}`,
             name: '新供应商',
             baseUrl: 'https://api.example.com/anthropic',
-            authToken: 'your-api-key'
+            authToken: 'your-api-key',
+            model: '',
+            smallFastModel: ''
         };
 
         data.providers.push(newProvider);

@@ -16,20 +16,26 @@ export class ProviderTreeItem extends vscode.TreeItem {
                             provider.authToken !== 'your-api-key' && 
                             provider.authToken !== 'your-api-key-here';
 
+        // 模型信息
+        const modelInfo = provider.model?.trim() ? `\n模型: ${provider.model}` : '';
+        const smallFastModelInfo = provider.smallFastModel?.trim() ? `\n快模型: ${provider.smallFastModel}` : '';
+
         // 设置 tooltip
         if (isActive) {
-            this.tooltip = `${provider.name} (当前使用)\n${provider.baseUrl}`;
+            this.tooltip = `${provider.name} (当前使用)\n${provider.baseUrl}${modelInfo}${smallFastModelInfo}`;
         } else if (!isConfigured) {
             this.tooltip = `${provider.name} (未配置)\n${provider.baseUrl}\n⚠️ 请先编辑配置文件填写 API Key`;
         } else {
-            this.tooltip = `${provider.name}\n${provider.baseUrl}`;
+            this.tooltip = `${provider.name}\n${provider.baseUrl}${modelInfo}${smallFastModelInfo}`;
         }
         
         // 设置描述文字
         if (isActive) {
-            this.description = '✓ 当前使用';
+            this.description = `✓ 当前使用${provider.model?.trim() ? ' • ' + provider.model : ''}`;
         } else if (!isConfigured) {
             this.description = '⚠️ 未配置';
+        } else if (provider.model?.trim()) {
+            this.description = provider.model;
         } else {
             this.description = '';
         }

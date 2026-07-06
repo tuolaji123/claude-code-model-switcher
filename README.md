@@ -60,17 +60,34 @@ npx vsce package
       "id": "glm",
       "name": "智谱 GLM",
       "baseUrl": "https://open.bigmodel.cn/api/anthropic",
-      "authToken": "your-api-key-here"
+      "authToken": "your-api-key-here",
+      "model": "",
+      "smallFastModel": ""
     },
     {
       "id": "custom",
       "name": "自定义供应商",
       "baseUrl": "https://api.example.com/v1",
-      "authToken": "your-api-key"
+      "authToken": "your-api-key",
+      "model": "",
+      "smallFastModel": ""
     }
   ]
 }
 ```
+
+字段说明：
+
+| 字段 | 说明 |
+|------|------|
+| `id` | 供应商唯一标识 |
+| `name` | 显示名称 |
+| `baseUrl` | API 接口地址 |
+| `authToken` | API Key |
+| `model` | 主模型 ID（可选，默认空）。例如 OpenRouter 的 `~anthropic/claude-fable-latest` |
+| `smallFastModel` | 轻量/快速任务模型 ID（可选，默认空）。例如 OpenRouter 的 `~anthropic/claude-haiku-latest` |
+
+`model` 和 `smallFastModel` 为空时，切换供应商后不会向 `settings.json` 写入 `ANTHROPIC_MODEL` / `ANTHROPIC_SMALL_FAST_MODEL`，适合 Kimi、GLM 等不需要指定模型 ID 的供应商。
 
 ### settings.json 自动更新
 
