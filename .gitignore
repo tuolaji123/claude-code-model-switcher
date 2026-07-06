@@ -4,3 +4,4 @@ node_modules
 *.vsix
 .claude/.env
 .claude/model-providers.json
+.claude/settings.json
